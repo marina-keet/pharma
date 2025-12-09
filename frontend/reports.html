@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rapports - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-100 via-green-100 to-white">
+  <nav class="bg-white/80 shadow-lg p-4 flex justify-between items-center sticky top-0 z-10">
+    <div class="flex items-center space-x-3">
+      <img src="https://cdn-icons-png.flaticon.com/512/2965/2965567.png" alt="Logo pharmacie" class="w-10 h-10 drop-shadow">
+      <span class="font-extrabold text-blue-700 text-xl tracking-tight">Pharmacie</span>
+    </div>
+      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
+          <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
+          <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
+        </svg>
+      </span>
+        <div class="relative ml-4">
+          <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+            <span id="userNameText"></span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+            <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Paramètres</a>
+            <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+          </div>
+        </div>
+    <div class="space-x-2">
+      <a href="dashboard.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Tableau de bord</a>
+      <a href="clients.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Clients</a>
+      <a href="products.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Produits & Stock</a>
+      <a href="sales.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Vente</a>
+      <a href="invoices.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Factures</a>
+      <a href="suppliers.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Fournisseurs</a>
+      <a href="reports.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Rapports</a>
+    </div>
+  </nav>
+  <main class="p-8">
+    <h1 class="text-3xl font-extrabold text-blue-800 mb-8 text-center drop-shadow">Rapports</h1>
+    <div class="mb-6 flex justify-center space-x-4">
+      <button class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition font-bold" onclick="loadReport('sales')">Ventes</button>
+      <button class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition font-bold" onclick="loadReport('stock')">Stock</button>
+    </div>
+    <div id="reportContent" class="bg-white/90 p-8 rounded-2xl shadow-xl"></div>
+  </main>
+  <script src="role-access.js"></script>
+    <script>
+      const username = localStorage.getItem('username');
+      if (username) {
+        const userBtn = document.getElementById('userDisplay');
+        const userNameText = document.getElementById('userNameText');
+        userNameText.textContent = '👤 ' + username;
+        userBtn.classList.remove('hidden');
+      }
+      // Dropdown logic
+      const userBtn = document.getElementById('userDisplay');
+      const userMenu = document.getElementById('userMenu');
+      if (userBtn && userMenu) {
+        userBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          userMenu.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!userMenu.classList.contains('hidden')) {
+            userMenu.classList.add('hidden');
+          }
+        });
+        userMenu.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+    </script>
+  <script src="reports.js"></script>
+</body>
+</html>

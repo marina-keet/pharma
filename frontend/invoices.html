@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factures - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
+  <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-blue-100">
+    <div class="flex items-center space-x-3">
+      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
+          <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
+          <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="font-extrabold text-blue-700 text-2xl tracking-tight">Pharmacie</span>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <a href="dashboard.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🏠</span>Tableau de bord</a>
+      <a href="clients.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>👤</span>Clients</a>
+      <a href="products.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>💊</span>Produits</a>
+      <a href="sales.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🛒</span>Vente</a>
+      <a href="invoices.html" class="px-4 py-2 rounded-lg bg-blue-100 text-blue-900 font-bold shadow-inner flex items-center gap-1"><span>🧾</span>Factures</a>
+      <a href="suppliers.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🚚</span>Fournisseurs</a>
+      <a href="reports.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>📊</span>Rapports</a>
+      <div class="relative ml-4">
+        <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+          <span id="userNameText"></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+          <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Paramètres</a>
+          <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-5xl mx-auto p-6 md:p-12">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-extrabold text-blue-900 drop-shadow flex items-center gap-2"><span>🧾</span>Factures</h1>
+      <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold shadow">Gestion & Suivi</span>
+    </div>
+    <div class="overflow-x-auto rounded-2xl shadow-2xl border border-blue-100 bg-white/95">
+      <table class="min-w-full divide-y divide-blue-100">
+        <thead class="bg-gradient-to-r from-blue-50 to-green-50">
+          <tr>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Numéro</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Client</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Date</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Total</th>
+          </tr>
+        </thead>
+        <tbody id="invoicesTable" class="divide-y divide-blue-50">
+          <!-- Invoices list here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <script src="role-access.js"></script>
+  <script>
+    const username = localStorage.getItem('username');
+    if (username) {
+      const userBtn = document.getElementById('userDisplay');
+      const userNameText = document.getElementById('userNameText');
+      userNameText.textContent = '👤 ' + username;
+      userBtn.classList.remove('hidden');
+    }
+    // Dropdown logic
+    const userBtn = document.getElementById('userDisplay');
+    const userMenu = document.getElementById('userMenu');
+    if (userBtn && userMenu) {
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!userMenu.classList.contains('hidden')) {
+          userMenu.classList.add('hidden');
+        }
+      });
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+  </script>
+  <script src="invoices.js"></script>
+</body>
+</html>

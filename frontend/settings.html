@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paramètres du système</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-blue-50 min-h-screen">
+  <nav class="bg-white shadow flex items-center justify-between px-8 py-4">
+    <div class="flex items-center gap-4">
+      <a href="dashboard.html" class="text-blue-700 font-extrabold text-xl">Pharmacie</a>
+      <span class="text-gray-400">/</span>
+      <span class="font-semibold text-blue-900">Paramètres</span>
+    </div>
+    <div class="flex items-center">
+      <div class="relative ml-4">
+        <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+          <span id="userNameText"></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+          <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-blue-700 hover:bg-blue-50">Paramètres</a>
+          <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10">
+    <h1 class="text-2xl font-bold text-blue-800 mb-6">Paramètres du système</h1>
+    <form id="systemSettingsForm" class="space-y-6">
+      <div>
+        <label class="block font-semibold mb-1">Nom de la pharmacie</label>
+        <input type="text" id="pharmacyName" class="w-full border rounded px-3 py-2" placeholder="Nom de la pharmacie">
+      </div>
+      <div>
+        <label class="block font-semibold mb-1">Adresse</label>
+        <input type="text" id="pharmacyAddress" class="w-full border rounded px-3 py-2" placeholder="Adresse">
+      </div>
+      <div>
+        <label class="block font-semibold mb-1">Téléphone</label>
+        <input type="text" id="pharmacyPhone" class="w-full border rounded px-3 py-2" placeholder="Téléphone">
+      </div>
+      <div>
+        <label class="block font-semibold mb-1">Devise</label>
+        <input type="text" id="currency" class="w-full border rounded px-3 py-2" placeholder="Devise (ex: Franc congolais)">
+      </div>
+      <div>
+        <label class="block font-semibold mb-1">Texte additionnel sur la facture</label>
+        <textarea id="invoiceNote" class="w-full border rounded px-3 py-2" rows="3" placeholder="Texte qui apparaîtra sur chaque facture"></textarea>
+      </div>
+      <div class="flex justify-end">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 font-bold">Enregistrer</button>
+      </div>
+    </form>
+    <div id="settingsToast" class="fixed top-6 right-6 bg-green-100 text-green-800 px-4 py-2 rounded shadow-lg hidden">Paramètres enregistrés !</div>
+  </main>
+  <script src="role-access.js"></script>
+  <script>
+    // Affichage du nom utilisateur
+    const username = localStorage.getItem('username');
+    if (username) {
+      const userBtn = document.getElementById('userDisplay');
+      const userNameText = document.getElementById('userNameText');
+      userNameText.textContent = '👤 ' + username;
+      userBtn.classList.remove('hidden');
+    }
+    // Dropdown
+    const userBtn = document.getElementById('userDisplay');
+    const userMenu = document.getElementById('userMenu');
+    if (userBtn && userMenu) {
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!userMenu.classList.contains('hidden')) {
+          userMenu.classList.add('hidden');
+        }
+      });
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+    // Gestion du formulaire (mock localStorage, à remplacer par API backend)
+    const form = document.getElementById('systemSettingsForm');
+    const toast = document.getElementById('settingsToast');
+    // Charger les valeurs existantes
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('pharmacyName').value = localStorage.getItem('pharmacyName') || '';
+      document.getElementById('pharmacyAddress').value = localStorage.getItem('pharmacyAddress') || '';
+      document.getElementById('pharmacyPhone').value = localStorage.getItem('pharmacyPhone') || '';
+      document.getElementById('currency').value = localStorage.getItem('currency') || 'Franc congolais';
+      document.getElementById('invoiceNote').value = localStorage.getItem('invoiceNote') || '';
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      localStorage.setItem('pharmacyName', document.getElementById('pharmacyName').value);
+      localStorage.setItem('pharmacyAddress', document.getElementById('pharmacyAddress').value);
+      localStorage.setItem('pharmacyPhone', document.getElementById('pharmacyPhone').value);
+      localStorage.setItem('currency', document.getElementById('currency').value);
+      localStorage.setItem('invoiceNote', document.getElementById('invoiceNote').value);
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2000);
+    });
+  </script>
+</body>
+</html>

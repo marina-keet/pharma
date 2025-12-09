@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilisateurs - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
+  <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-green-100">
+    <div class="flex items-center space-x-3">
+      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
+          <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
+          <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="font-extrabold text-green-700 text-2xl tracking-tight">Pharmacie</span>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <a href="dashboard.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🏠</span>Tableau de bord</a>
+      <a href="users.html" class="px-4 py-2 rounded-lg bg-green-100 text-green-900 font-bold shadow-inner flex items-center gap-1"><span>👥</span>Utilisateurs</a>
+      <div class="relative ml-4">
+        <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+          <span id="userNameText"></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+          <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Paramètres</a>
+          <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto p-6 md:p-12">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-extrabold text-green-900 drop-shadow flex items-center gap-2"><span>👥</span>Utilisateurs</h1>
+      <span class="inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-semibold shadow">Gestion des comptes</span>
+    </div>
+    <div class="mb-8 flex justify-end">
+      <button class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition font-bold flex items-center gap-2" onclick="showAddUser()"><span>➕</span>Ajouter un utilisateur</button>
+    </div>
+    <div class="overflow-x-auto rounded-2xl shadow-2xl border border-green-100 bg-white/95 mb-8">
+      <table class="min-w-full divide-y divide-green-100">
+        <thead class="bg-gradient-to-r from-green-50 to-blue-50">
+          <tr>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Nom d'utilisateur</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Rôle</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Téléphone</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Adresse</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Créé le</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-green-700 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable" class="divide-y divide-green-50">
+          <!-- Users list here -->
+        </tbody>
+      </table>
+    </div>
+    <div id="addUserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+      <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 animate-fade-in">
+        <h2 class="text-2xl font-bold mb-4 text-green-700 flex items-center gap-2"><span>➕</span>Ajouter un utilisateur</h2>
+        <form id="addUserForm" class="space-y-4">
+          <input type="text" name="username" placeholder="Nom d'utilisateur" class="w-full px-3 py-2 border border-green-200 rounded focus:outline-none focus:ring-2 focus:ring-green-400 transition" required>
+          <input type="password" name="password" placeholder="Mot de passe" class="w-full px-3 py-2 border border-green-200 rounded focus:outline-none focus:ring-2 focus:ring-green-400 transition" required>
+          <input type="text" name="phone" placeholder="Téléphone" class="w-full px-3 py-2 border border-green-200 rounded focus:outline-none focus:ring-2 focus:ring-green-400 transition" required>
+          <input type="text" name="address" placeholder="Adresse" class="w-full px-3 py-2 border border-green-200 rounded focus:outline-none focus:ring-2 focus:ring-green-400 transition" required>
+          <select name="role" class="w-full px-3 py-2 border border-green-200 rounded focus:outline-none focus:ring-2 focus:ring-green-400 transition" required>
+            <option value="">Sélectionner un rôle</option>
+            <option value="gerant">Gérant</option>
+            <option value="caissier">Caissier</option>
+          </select>
+          <div class="flex justify-end space-x-2">
+            <button type="button" onclick="hideAddUser()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Annuler</button>
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 transition">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="role-access.js"></script>
+  <script>
+    const username = localStorage.getItem('username');
+    if (username) {
+      const userBtn = document.getElementById('userDisplay');
+      const userNameText = document.getElementById('userNameText');
+      userNameText.textContent = '👤 ' + username;
+      userBtn.classList.remove('hidden');
+    }
+    // Dropdown logic
+    const userBtn = document.getElementById('userDisplay');
+    const userMenu = document.getElementById('userMenu');
+    if (userBtn && userMenu) {
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!userMenu.classList.contains('hidden')) {
+          userMenu.classList.add('hidden');
+        }
+      });
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+  </script>
+  <script src="users.js"></script>
+</body>
+</html>

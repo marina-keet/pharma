@@ -1,0 +1,56 @@
+-- Table des utilisateurs avec gestion des rôles
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'gerant', 'caissier') NOT NULL DEFAULT 'caissier',
+  phone VARCHAR(30),
+  address VARCHAR(255),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE DATABASE IF NOT EXISTS pharmacie;
+USE pharmacie;
+
+CREATE TABLE IF NOT EXISTS clients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  categorie VARCHAR(100),
+  stock INT DEFAULT 0,
+  price DECIMAL(10,2) DEFAULT 0.00
+);
+
+CREATE TABLE IF NOT EXISTS suppliers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS sales (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sales_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  sale_id INT,
+  product_id INT,
+  quantity INT,
+  price DECIMAL(10,2),
+  FOREIGN KEY (sale_id) REFERENCES sales(id),
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE IF NOT EXISTS invoices (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  number VARCHAR(50),
+  client_id INT,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  total DECIMAL(10,2),
+  FOREIGN KEY (client_id) REFERENCES clients(id)
+);

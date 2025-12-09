@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produits & Stock - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
+  <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-blue-100">
+    <div class="flex items-center space-x-3">
+      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
+          <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
+          <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="font-extrabold text-blue-700 text-2xl tracking-tight">Pharmacie</span>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <a href="dashboard.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🏠</span>Tableau de bord</a>
+      <a href="clients.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>👤</span>Clients</a>
+      <a href="products.html" class="px-4 py-2 rounded-lg bg-blue-100 text-blue-900 font-bold shadow-inner flex items-center gap-1"><span>💊</span>Produits</a>
+      <a href="sales.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🛒</span>Vente</a>
+      <a href="invoices.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🧾</span>Factures</a>
+      <a href="suppliers.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🚚</span>Fournisseurs</a>
+      <a href="reports.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>📊</span>Rapports</a>
+      <span id="userDisplay" class="ml-4 px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow hidden"></span>
+    </div>
+  </nav>
+  <main class="max-w-5xl mx-auto p-6 md:p-12">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-extrabold text-blue-900 drop-shadow flex items-center gap-2"><span>💊</span>Produits & Stock</h1>
+      <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold shadow">Gestion & Suivi</span>
+    </div>
+    <div class="mb-8 flex justify-end">
+      <button class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition font-bold flex items-center gap-2" onclick="showAddProduct()"><span>➕</span>Ajouter un produit</button>
+    </div>
+    <div id="toastContainer" class="fixed top-6 right-6 z-50"></div>
+    <div class="overflow-x-auto rounded-2xl shadow-2xl border border-blue-100 bg-white/95">
+      <table class="min-w-full divide-y divide-blue-100">
+        <thead class="bg-gradient-to-r from-blue-50 to-green-50">
+          <tr>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Nom</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Catégorie</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Stock</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Prix</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productsTable" class="divide-y divide-blue-50">
+          <!-- Products list here -->
+        </tbody>
+      </table>
+    </div>
+    <div id="addProductModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+      <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 animate-fade-in">
+        <h2 class="text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2"><span>➕</span>Ajouter un produit</h2>
+        <form id="addProductForm" class="space-y-4">
+          <input type="text" name="name" placeholder="Nom" class="w-full px-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" required>
+          <input type="text" name="categorie" placeholder="Catégorie" class="w-full px-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" required>
+          <input type="number" name="stock" placeholder="Stock" class="w-full px-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" required>
+          <input type="number" name="price" placeholder="Prix" class="w-full px-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition" required>
+          <div class="flex justify-end space-x-2">
+            <button type="button" onclick="hideAddProduct()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Annuler</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition">Ajouter</button>
+          </div>
+        </form>
+        <div id="stockAlert" class="hidden mt-4 text-yellow-700 text-center font-semibold text-base bg-yellow-100 rounded-lg px-4 py-2 shadow"></div>
+      </div>
+    </div>
+  </main>
+  <script src="role-access.js"></script>
+  <script>
+    // Affiche le nom de l'utilisateur connecté
+    const username = localStorage.getItem('username');
+    if (username) {
+      const userSpan = document.getElementById('userDisplay');
+      userSpan.textContent = '👤 ' + username;
+      userSpan.classList.remove('hidden');
+    }
+  </script>
+  <script src="products.js"></script>
+</body>
+</html>
