@@ -26,7 +26,7 @@
       </div>
     </div>
   </nav>
-  <main class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10">
+  <main class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl px-2 sm:px-4 md:px-8 py-4 md:py-12 mt-6">
     <h1 class="text-2xl font-bold text-blue-800 mb-6">Paramètres du système</h1>
     <form id="systemSettingsForm" class="space-y-6">
       <div>
@@ -90,7 +90,7 @@
       document.getElementById('pharmacyName').value = localStorage.getItem('pharmacyName') || '';
       document.getElementById('pharmacyAddress').value = localStorage.getItem('pharmacyAddress') || '';
       document.getElementById('pharmacyPhone').value = localStorage.getItem('pharmacyPhone') || '';
-      document.getElementById('currency').value = localStorage.getItem('currency') || 'Franc congolais';
+      document.getElementById('currency').value = 'FC';
       document.getElementById('invoiceNote').value = localStorage.getItem('invoiceNote') || '';
     });
     form.addEventListener('submit', (e) => {

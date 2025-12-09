@@ -6,7 +6,7 @@ function loadInvoices() {
       tbody.innerHTML = '';
       (data.invoices || []).forEach(invoice => {
         const tr = document.createElement('tr');
-        const currency = localStorage.getItem('currency') || 'Franc congolais';
+        const currency = 'FC';
         tr.innerHTML = `<td class='py-2 px-4'>${invoice.number}</td><td class='py-2 px-4'>${invoice.client}</td><td class='py-2 px-4'>${invoice.date}</td><td class='py-2 px-4'>${invoice.total} ${currency}</td>`;
         tbody.appendChild(tr);
       });

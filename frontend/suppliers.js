@@ -26,7 +26,8 @@ function loadSuppliers() {
       tbody.innerHTML = '';
       (data.suppliers || []).forEach(supplier => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td class='py-2 px-4'>${supplier.name}</td><td class='py-2 px-4'>${supplier.phone}</td><td class='py-2 px-4'><button class='text-red-600' onclick='deleteSupplier(${supplier.id})'>Supprimer</button></td>`;
+          const currency = 'FC';
+          tr.innerHTML = `<td class='py-2 px-4'>${supplier.name}</td><td class='py-2 px-4'>${supplier.phone}</td><td class='py-2 px-4'><button class='text-red-600' onclick='deleteSupplier(${supplier.id})'>Supprimer</button></td><td class='py-2 px-4'>${supplier.balance} ${currency}</td>`;
         tbody.appendChild(tr);
       });
     });
