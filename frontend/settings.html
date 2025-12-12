@@ -29,26 +29,88 @@
   <main class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl px-2 sm:px-4 md:px-8 py-4 md:py-12 mt-6">
     <h1 class="text-2xl font-bold text-blue-800 mb-6">Paramètres du système</h1>
     <form id="systemSettingsForm" class="space-y-6">
-      <div>
-        <label class="block font-semibold mb-1">Nom de la pharmacie</label>
-        <input type="text" id="pharmacyName" class="w-full border rounded px-3 py-2" placeholder="Nom de la pharmacie">
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Adresse</label>
-        <input type="text" id="pharmacyAddress" class="w-full border rounded px-3 py-2" placeholder="Adresse">
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Téléphone</label>
-        <input type="text" id="pharmacyPhone" class="w-full border rounded px-3 py-2" placeholder="Téléphone">
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Devise</label>
-        <input type="text" id="currency" class="w-full border rounded px-3 py-2" placeholder="Devise (ex: Franc congolais)">
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Texte additionnel sur la facture</label>
-        <textarea id="invoiceNote" class="w-full border rounded px-3 py-2" rows="3" placeholder="Texte qui apparaîtra sur chaque facture"></textarea>
-      </div>
+            <div class="bg-blue-50 rounded-xl p-4 mb-4 border">
+              <h2 class="text-lg font-bold text-blue-700 mb-2 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v6a1 1 0 001 1h6a1 1 0 001-1v-6h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z"/></svg>
+                Informations de la pharmacie
+              </h2>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Nom de la pharmacie</label>
+                <input type="text" id="pharmacy_name" class="w-full border rounded px-3 py-2" placeholder="Nom de la pharmacie" required>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Logo de la pharmacie</label>
+                <input type="file" id="pharmacy_logo" accept="image/*" class="w-full border rounded px-3 py-2">
+                <div id="logoPreview" class="mt-2"></div>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Adresse</label>
+                <input type="text" id="pharmacy_address" class="w-full border rounded px-3 py-2" placeholder="Adresse" required>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Téléphone</label>
+                <input type="text" id="pharmacy_phone" class="w-full border rounded px-3 py-2" placeholder="Téléphone" required>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Texte sur la facture</label>
+                <textarea id="invoice_note" class="w-full border rounded px-3 py-2" rows="2" placeholder="Texte qui apparaîtra sur chaque facture"></textarea>
+              </div>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4 mb-4 border">
+              <h2 class="text-lg font-bold text-green-700 mb-2 flex items-center gap-2">
+                <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 10c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z"/></svg>
+                Paramètres de vente
+              </h2>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Devise</label>
+                <input type="text" id="currency" class="w-full border rounded px-3 py-2" placeholder="Devise (ex: FC, USD)" required>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Taux de change</label>
+                <input type="number" step="0.01" id="exchange_rate" class="w-full border rounded px-3 py-2" placeholder="Taux de change" required>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">TVA (%)</label>
+                <input type="number" step="0.01" id="tva_percent" class="w-full border rounded px-3 py-2" placeholder="TVA en %" required>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Politique de remise</label>
+                <input type="text" id="discount_policy" class="w-full border rounded px-3 py-2" placeholder="Ex: 10% sur tout, etc.">
+              </div>
+            </div>
+            <div class="bg-yellow-50 rounded-xl p-4 mb-4 border">
+              <h2 class="text-lg font-bold text-yellow-700 mb-2 flex items-center gap-2">
+                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Paramètres système
+              </h2>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Langue</label>
+                <select id="language" class="w-full border rounded px-3 py-2">
+                  <option value="fr">Français</option>
+                  <option value="en">Anglais</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Format de date</label>
+                <select id="date_format" class="w-full border rounded px-3 py-2">
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="block font-semibold mb-1">Fuseau horaire</label>
+                <input type="text" id="timezone" class="w-full border rounded px-3 py-2" placeholder="Africa/Kinshasa" required>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Mode</label>
+                <select id="theme_mode" class="w-full border rounded px-3 py-2">
+                  <option value="clair">Clair</option>
+                  <option value="sombre">Sombre</option>
+                </select>
+              </div>
+            </div>
+      <!-- Doublons supprimés, champs déjà présents dans les blocs principaux -->
       <div class="flex justify-end">
         <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 font-bold">Enregistrer</button>
       </div>
@@ -82,26 +144,96 @@
         e.stopPropagation();
       });
     }
-    // Gestion du formulaire (mock localStorage, à remplacer par API backend)
+    // Gestion du formulaire paramètres de vente
     const form = document.getElementById('systemSettingsForm');
     const toast = document.getElementById('settingsToast');
-    // Charger les valeurs existantes
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('pharmacyName').value = localStorage.getItem('pharmacyName') || '';
-      document.getElementById('pharmacyAddress').value = localStorage.getItem('pharmacyAddress') || '';
-      document.getElementById('pharmacyPhone').value = localStorage.getItem('pharmacyPhone') || '';
-      document.getElementById('currency').value = 'FC';
-      document.getElementById('invoiceNote').value = localStorage.getItem('invoiceNote') || '';
+    let logoBase64 = null;
+    // Prévisualisation du logo
+    const logoInput = document.getElementById('pharmacy_logo');
+    const logoPreview = document.getElementById('logoPreview');
+    logoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          logoBase64 = evt.target.result;
+          logoPreview.innerHTML = `<img src='${logoBase64}' alt='Logo pharmacie' class='w-24 h-24 object-contain rounded-full border'>`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        logoBase64 = null;
+        logoPreview.innerHTML = '';
+      }
     });
-    form.addEventListener('submit', (e) => {
+    // Charger les valeurs existantes depuis l'API
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3001/api/settings', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('pharmacy_name').value = data.pharmacy_name || '';
+          document.getElementById('pharmacy_address').value = data.pharmacy_address || '';
+          document.getElementById('pharmacy_phone').value = data.pharmacy_phone || '';
+          document.getElementById('invoice_note').value = data.invoice_note || '';
+          document.getElementById('currency').value = data.currency || 'FC';
+          document.getElementById('exchange_rate').value = data.exchange_rate || 1;
+          document.getElementById('tva_percent').value = data.tva_percent || 0;
+          document.getElementById('discount_policy').value = data.discount_policy || '';
+          document.getElementById('language').value = data.language || 'fr';
+          document.getElementById('date_format').value = data.date_format || 'DD/MM/YYYY';
+          document.getElementById('timezone').value = data.timezone || 'Africa/Kinshasa';
+          document.getElementById('theme_mode').value = data.theme_mode || 'clair';
+          if (data.pharmacy_logo) {
+            logoBase64 = data.pharmacy_logo;
+            logoPreview.innerHTML = `<img src='${logoBase64}' alt='Logo pharmacie' class='w-24 h-24 object-contain rounded-full border'>`;
+          }
+        }
+      } catch (err) {}
+    });
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      localStorage.setItem('pharmacyName', document.getElementById('pharmacyName').value);
-      localStorage.setItem('pharmacyAddress', document.getElementById('pharmacyAddress').value);
-      localStorage.setItem('pharmacyPhone', document.getElementById('pharmacyPhone').value);
-      localStorage.setItem('currency', document.getElementById('currency').value);
-      localStorage.setItem('invoiceNote', document.getElementById('invoiceNote').value);
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 2000);
+      const token = localStorage.getItem('token');
+      const body = {
+        pharmacy_name: document.getElementById('pharmacy_name').value,
+        pharmacy_address: document.getElementById('pharmacy_address').value,
+        pharmacy_phone: document.getElementById('pharmacy_phone').value,
+        invoice_note: document.getElementById('invoice_note').value,
+        currency: document.getElementById('currency').value,
+        exchange_rate: document.getElementById('exchange_rate').value,
+        tva_percent: document.getElementById('tva_percent').value,
+        discount_policy: document.getElementById('discount_policy').value,
+        language: document.getElementById('language').value,
+        date_format: document.getElementById('date_format').value,
+        timezone: document.getElementById('timezone').value,
+        theme_mode: document.getElementById('theme_mode').value,
+        pharmacy_logo: logoBase64
+      };
+      try {
+        const res = await fetch('http://localhost:3001/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(body)
+        });
+        if (res.ok) {
+          toast.textContent = 'Paramètres enregistrés !';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 2000);
+        } else {
+          toast.textContent = 'Erreur lors de l’enregistrement.';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 2000);
+        }
+      } catch (err) {
+        toast.textContent = 'Erreur serveur.';
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+      }
     });
   </script>
 </body>

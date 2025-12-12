@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventaire - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
+  <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-blue-100">
+    <div class="flex items-center space-x-3">
+      <span id="pharmacyLogo" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow overflow-hidden">
+        <svg id="defaultPharmaIcon" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
+          <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
+          <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
+        </svg>
+      </span>
+      <span id="pharmacyName" class="font-extrabold text-blue-700 text-2xl tracking-tight">Pharmacie</span>
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <a href="dashboard.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🏠</span>Tableau de bord</a>
+      <a href="products.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>💊</span>Produits</a>
+      <a href="inventaire.html" class="px-4 py-2 rounded-lg bg-blue-100 text-blue-900 font-bold shadow-inner flex items-center gap-1"><span>📦</span>Inventaire</a>
+      <!-- Bouton utilisateur avec menu déroulant -->
+      <div class="relative ml-4">
+        <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+          <span id="userNameText"></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+          <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Paramètres</a>
+          <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-5xl mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-12">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+      <div class="flex items-center gap-2">
+        <h1 class="text-4xl font-extrabold text-blue-900 drop-shadow flex items-center gap-2"><span>📦</span>Inventaire</h1>
+        <input id="inventorySearch" type="text" placeholder="Rechercher..." class="ml-4 px-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-base" />
+      </div>
+      <div class="flex gap-2">
+        <button id="exportBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 font-bold flex items-center gap-2"><span>⬇️</span>Exporter Excel</button>
+        <button id="exportPdfBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 font-bold flex items-center gap-2"><span>📝</span>Exporter PDF</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto rounded-2xl shadow-2xl border border-blue-100 bg-white/95">
+      <table class="min-w-full divide-y divide-blue-100" id="inventoryTable">
+        <thead class="bg-gradient-to-r from-blue-50 to-green-50">
+          <tr>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Nom</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Catégorie</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Stock</th>
+            <th class="py-4 px-6 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Prix</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryBody" class="divide-y divide-blue-50"></tbody>
+      </table>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    <script src="inventaire-pdf.js"></script>
+  <script>
+    // Affichage dynamique du nom et logo de la pharmacie avec gestion d'erreur
+    fetch('http://localhost:3001/api/settings')
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur serveur ou accès refusé');
+        return res.json();
+      })
+      .then(data => {
+        if (data && (data.pharmacy_name || data.nom_pharmacie)) {
+          document.getElementById('pharmacyName').textContent = data.pharmacy_name || data.nom_pharmacie;
+        }
+        if (data && data.pharmacy_logo) {
+          const logoSpan = document.getElementById('pharmacyLogo');
+          logoSpan.innerHTML = `<img src='${data.pharmacy_logo}' alt='Logo pharmacie' class='w-12 h-12 object-contain rounded-full'>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('pharmacyName').textContent = 'Pharmacie';
+      });
+    // Charger l'inventaire
+    function loadInventory() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3001/api/products', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Erreur serveur ou accès refusé');
+          return res.json();
+        })
+        .then(data => {
+          window._inventoryProducts = data.products || [];
+          renderInventoryTable(window._inventoryProducts);
+        })
+        .catch(err => {
+          renderInventoryTable([]);
+          const tbody = document.getElementById('inventoryBody');
+          tbody.innerHTML = `<tr><td colspan='4' class='text-red-600 py-4'>${err.message}</td></tr>`;
+          showToast('Erreur lors du chargement de l\'inventaire', 'warning');
+        });
+
+      // Filtrage dynamique
+      const searchInput = document.getElementById('inventorySearch');
+      if (searchInput) {
+        searchInput.oninput = function() {
+          const query = this.value.trim().toLowerCase();
+          const filtered = (window._inventoryProducts || []).filter(product =>
+            product.name.toLowerCase().includes(query) ||
+            (product.categorie || '').toLowerCase().includes(query)
+          );
+          renderInventoryTable(filtered);
+        };
+      }
+    }
+
+    // Fonction pour afficher le tableau inventaire
+    function renderInventoryTable(products) {
+      const tbody = document.getElementById('inventoryBody');
+      tbody.innerHTML = '';
+      products.forEach(product => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class='py-2 px-4'>${product.name}</td><td class='py-2 px-4'>${product.categorie || ''}</td><td class='py-2 px-4'>${product.stock}</td><td class='py-2 px-4'>${product.price} FC</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    window.onload = loadInventory;
+    // Export Excel
+    document.getElementById('exportBtn').onclick = function() {
+      const table = document.getElementById('inventoryTable');
+      const wb = XLSX.utils.table_to_book(table, {sheet: "Inventaire"});
+      XLSX.writeFile(wb, 'inventaire_pharmacie.xlsx');
+      showToast('✅ Inventaire exporté en Excel', 'success');
+    };
+    document.getElementById('exportPdfBtn').onclick = function() {
+      exportInventoryPDF();
+      showToast('✅ Inventaire exporté en PDF', 'success');
+    };
+    // Toast notification
+    function showToast(message, type = 'info') {
+      let container = document.getElementById('toastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'fixed top-6 right-6 z-50';
+        document.body.appendChild(container);
+      }
+      const toast = document.createElement('div');
+      toast.className = `mb-2 px-4 py-2 rounded shadow font-bold text-sm animate-fade-in ${type === 'warning' ? 'bg-yellow-200 text-yellow-900 border border-yellow-400' : type === 'success' ? 'bg-green-200 text-green-900 border border-green-400' : 'bg-blue-200 text-blue-900 border border-blue-400'}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

@@ -9,14 +9,15 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500">
   <nav class="bg-white/80 shadow-lg p-4 flex justify-between items-center sticky top-0 z-10">
     <div class="flex items-center space-x-3">
-      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <span id="pharmacyLogoHeader" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow overflow-hidden">
+        <svg id="defaultPharmaIcon" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
           <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
           <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
         </svg>
       </span>
-      <span class="font-extrabold text-green-700 text-2xl tracking-tight">Pharmacie</span>
+      <span id="pharmacyNameHeader" class="font-extrabold text-green-700 text-2xl tracking-tight">Pharmacie</span>
+      <span id="currencyHeader" class="ml-2 px-2 py-1 rounded bg-green-100 text-green-700 font-bold text-base"></span>
     </div>
     <div class="space-x-2 items-center flex">
       <a href="dashboard.html" class="px-3 py-1 rounded hover:bg-blue-100 text-blue-700 font-semibold transition">Tableau de bord</a>
@@ -57,6 +58,33 @@
     </div>
   </main>
   <script src="role-access.js"></script>
+    <script>
+      // Affichage dynamique du nom, devise et logo de la pharmacie
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch('http://localhost:3001/api/settings', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById('pharmacyNameHeader').textContent = data.pharmacy_name || 'Pharmacie';
+            document.getElementById('currencyHeader').textContent = data.currency ? 'Devise : ' + data.currency : '';
+            // Affichage du logo si disponible
+            if (data.pharmacy_logo) {
+              const logoHeader = document.getElementById('pharmacyLogoHeader');
+              logoHeader.innerHTML = `<img src="${data.pharmacy_logo}" alt="Logo pharmacie" class="w-12 h-12 object-contain rounded-full">`;
+            }
+          } else {
+            document.getElementById('pharmacyNameHeader').textContent = 'Pharmacie';
+            document.getElementById('currencyHeader').textContent = '';
+          }
+        } catch (err) {
+          document.getElementById('pharmacyNameHeader').textContent = 'Pharmacie';
+          document.getElementById('currencyHeader').textContent = '';
+        }
+      });
+    </script>
   <script>
     const username = localStorage.getItem('username');
     if (username) {

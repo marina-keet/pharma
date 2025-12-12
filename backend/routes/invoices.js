@@ -1,3 +1,23 @@
+// Détail d'une facture
+router.get('/:id', authenticateToken, authorizeRoles('admin'), async (req, res) => {
+  const id = req.params.id;
+  try {
+    // Facture + client
+    const [[invoice]] = await pool.query('SELECT invoices.*, clients.name as client FROM invoices LEFT JOIN clients ON invoices.client_id = clients.id WHERE invoices.id = ?', [id]);
+    if (!invoice) return res.status(404).json({ error: 'Facture introuvable' });
+    // Produits de la vente
+    const [[sale]] = await pool.query('SELECT id FROM sales WHERE id = ?', [id]);
+    let items = [];
+    if (sale) {
+      [items] = await pool.query('SELECT sales_items.*, products.name as product FROM sales_items LEFT JOIN products ON sales_items.product_id = products.id WHERE sales_items.sale_id = ?', [sale.id]);
+    }
+    // Paramètres pharmacie (nom, devise)
+    const [[settings]] = await pool.query('SELECT pharmacy_name, currency FROM settings LIMIT 1');
+    res.json({ invoice, items, settings });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
 
 const express = require('express');
 const router = express.Router();

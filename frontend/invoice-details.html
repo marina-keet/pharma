@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail Facture - Gestion de Pharmacie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
+  <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-blue-100">
+    <div class="flex items-center space-x-3">
+      <a href="invoices.html" class="text-blue-700 font-bold">← Retour</a>
+      <span id="pharmacyName" class="font-extrabold text-blue-700 text-2xl tracking-tight ml-4">Pharmacie</span>
+    </div>
+  </nav>
+  <main class="max-w-2xl mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-12 print:max-w-full print:p-0">
+    <div class="flex items-center justify-between mb-4 print:hidden">
+      <h1 class="text-3xl font-extrabold text-blue-900">Détail de la facture</h1>
+      <div class="flex gap-2">
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">🖨️ Imprimer</button>
+        <button id="downloadPdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition">⬇️ Télécharger PDF</button>
+      </div>
+    </div>
+    <div id="invoiceHeader" class="flex items-center gap-4 mb-4 print:mb-2"></div>
+    <div id="invoiceDetails" class="bg-white rounded-xl shadow-lg p-6 border border-blue-100 print:border-0 print:shadow-none print:bg-white"></div>
+    <div id="invoiceItems" class="mt-6"></div>
+    <div id="invoiceFooter" class="mt-8 text-center text-gray-600 text-sm print:mt-4"></div>
+  </main>
+  <script src="html2pdf-loader.js"></script>
+  <script>
+        // Génération PDF
+        document.addEventListener('DOMContentLoaded', function() {
+          const btn = document.getElementById('downloadPdfBtn');
+          if (btn) {
+            btn.addEventListener('click', function() {
+              if (!window.html2pdfLoaded) {
+                alert('Le module PDF n\'est pas encore chargé. Réessayez dans une seconde.');
+                return;
+              }
+              const main = document.querySelector('main');
+              html2pdf().set({
+                margin: 0.5,
+                filename: 'facture.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+              }).from(main).save();
+            });
+          }
+        });
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const token = localStorage.getItem('token');
+    if (!id) {
+      document.getElementById('invoiceDetails').innerHTML = '<span class="text-red-600">Aucune facture sélectionnée.</span>';
+    } else {
+      fetch(`http://localhost:3001/api/invoices/${id}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.invoice) {
+            document.getElementById('invoiceDetails').innerHTML = '<span class="text-red-600">Facture introuvable.</span>';
+            return;
+          }
+          const inv = data.invoice;
+          document.getElementById('pharmacyName').textContent = data.settings?.pharmacy_name || 'Pharmacie';
+          // En-tête avec logo, nom, adresse, téléphone
+          let header = '';
+          if (data.settings?.pharmacy_logo) {
+            header += `<img src='${data.settings.pharmacy_logo}' alt='Logo pharmacie' class='w-16 h-16 object-contain rounded-full border border-blue-100 print:mx-auto print:block mb-2'>`;
+          }
+          header += `<div class='flex flex-col items-center print:items-center'>`;
+          header += `<div class='font-extrabold text-xl text-blue-900'>${data.settings?.pharmacy_name || 'Pharmacie'}</div>`;
+          if (data.settings?.pharmacy_address) header += `<div class='text-gray-700 text-sm'>${data.settings.pharmacy_address}</div>`;
+          if (data.settings?.pharmacy_phone) header += `<div class='text-gray-700 text-sm'>Tél: ${data.settings.pharmacy_phone}</div>`;
+          if (data.settings?.pharmacy_tax_number) header += `<div class='text-gray-700 text-sm'>N° Impôt: ${data.settings.pharmacy_tax_number}</div>`;
+          header += '</div>';
+          document.getElementById('invoiceHeader').innerHTML = header;
+          document.getElementById('invoiceDetails').innerHTML = `
+            <div class="mb-2"><span class="font-bold">Facture :</span> ${inv.number}</div>
+            <div class="mb-2"><span class="font-bold">Client :</span> ${inv.client || 'Anonyme'}</div>
+            <div class="mb-2"><span class="font-bold">Date :</span> ${inv.date ? inv.date.substring(0, 16).replace('T',' ') : ''}</div>
+          `;
+          if (data.items && data.items.length) {
+            let html = `<table class='w-full mt-4 text-sm border-t border-b border-dashed border-gray-400 print:border'><thead><tr><th class='text-left px-2 py-1'>Produit</th><th class='text-right px-2 py-1'>Qté</th><th class='text-right px-2 py-1'>Prix</th></tr></thead><tbody>`;
+            data.items.forEach(item => {
+              html += `<tr><td class='px-2 py-1'>${item.product}</td><td class='px-2 py-1 text-right'>${item.quantity}</td><td class='px-2 py-1 text-right'>${item.price}</td></tr>`;
+            });
+            html += `</tbody></table><div class='text-right font-bold mt-2'>Total : ${inv.total} ${data.settings?.currency || 'FC'}</div>`;
+            document.getElementById('invoiceItems').innerHTML = html;
+          } else {
+            document.getElementById('invoiceItems').innerHTML = '<span class="text-gray-500">Aucun produit pour cette facture.</span>';
+          }
+          // Note de bas de facture
+          if (data.settings?.invoice_note) {
+            document.getElementById('invoiceFooter').textContent = data.settings.invoice_note;
+          }
+          // Style ticket de caisse pour impression
+          document.querySelector('main').classList.add('print:!max-w-xs','print:!p-2');
+        })
+        .catch(() => {
+          document.getElementById('invoiceDetails').innerHTML = '<span class="text-red-600">Erreur de chargement.</span>';
+        });
+    }
+  </script>
+  <style>
+    @media print {
+      nav, .print\:hidden { display: none !important; }
+      .print\:block { display: block !important; }
+      .print\:mx-auto { margin-left: auto !important; margin-right: auto !important; }
+      .print\:max-w-full { max-width: 100vw !important; }
+      .print\:p-0 { padding: 0 !important; }
+    }
+  </style>
+</body>
+</html>

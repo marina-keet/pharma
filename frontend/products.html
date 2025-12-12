@@ -9,14 +9,14 @@
 <body class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 font-sans">
   <nav class="bg-white/90 shadow-lg px-6 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-blue-100">
     <div class="flex items-center space-x-3">
-      <span class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <span id="pharmacyLogo" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-50 border-2 border-green-100 shadow overflow-hidden">
+        <svg id="defaultPharmaIcon" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <rect x="7" y="2" width="10" height="20" rx="5" fill="#34d399"/>
           <rect x="2" y="7" width="20" height="10" rx="5" fill="#60a5fa"/>
           <rect x="9" y="9" width="6" height="6" rx="3" fill="#fff"/>
         </svg>
       </span>
-      <span class="font-extrabold text-blue-700 text-2xl tracking-tight">Pharmacie</span>
+      <span id="pharmacyName" class="font-extrabold text-blue-700 text-2xl tracking-tight">Pharmacie</span>
     </div>
     <div class="flex flex-wrap gap-2 items-center">
       <a href="dashboard.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🏠</span>Tableau de bord</a>
@@ -26,7 +26,17 @@
       <a href="invoices.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>🧾</span>Factures</a>
       <a href="suppliers.html" class="px-4 py-2 rounded-lg hover:bg-green-50 text-green-700 font-semibold transition flex items-center gap-1"><span>🚚</span>Fournisseurs</a>
       <a href="reports.html" class="px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-semibold transition flex items-center gap-1"><span>📊</span>Rapports</a>
-      <span id="userDisplay" class="ml-4 px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow hidden"></span>
+      <!-- Bouton utilisateur avec menu déroulant -->
+      <div class="relative ml-4">
+        <button id="userDisplay" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold shadow flex items-center gap-2 focus:outline-none hidden" type="button">
+          <span id="userNameText"></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50 hidden">
+          <a href="settings.html" id="settingsBtn" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Paramètres</a>
+          <a href="login.html" id="logoutBtn" class="block px-4 py-2 text-red-600 hover:bg-red-50">Déconnexion</a>
+        </div>
+      </div>
     </div>
   </nav>
   <main class="max-w-5xl mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-12">
@@ -88,6 +98,31 @@
     </div>
   </main>
   <script src="role-access.js"></script>
+    <script>
+      // Affichage dynamique du nom et logo de la pharmacie avec gestion d'erreur et token
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3001/api/settings', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Erreur serveur ou accès refusé');
+          return res.json();
+        })
+        .then(data => {
+          const pharmacyNameEl = document.getElementById('pharmacyName');
+          if (pharmacyNameEl && (data && (data.pharmacy_name || data.nom_pharmacie))) {
+            pharmacyNameEl.textContent = data.pharmacy_name || data.nom_pharmacie;
+          }
+          if (data && data.pharmacy_logo) {
+            const logoSpan = document.getElementById('pharmacyLogo');
+            if (logoSpan) logoSpan.innerHTML = `<img src='${data.pharmacy_logo}' alt='Logo pharmacie' class='w-12 h-12 object-contain rounded-full'>`;
+          }
+        })
+        .catch(err => {
+          const pharmacyNameEl = document.getElementById('pharmacyName');
+          if (pharmacyNameEl) pharmacyNameEl.textContent = 'Pharmacie';
+        });
+    </script>
   <script>
     // Affiche le nom de l'utilisateur connecté
     const username = localStorage.getItem('username');
@@ -95,6 +130,8 @@
       const userSpan = document.getElementById('userDisplay');
       userSpan.textContent = '👤 ' + username;
       userSpan.classList.remove('hidden');
+      const userNameTextEl = document.getElementById('userNameText');
+      if (userNameTextEl) userNameTextEl.textContent = username; // Ajout pour le menu utilisateur
     }
   </script>
   <script src="products.js"></script>

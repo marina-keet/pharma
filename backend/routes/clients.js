@@ -5,7 +5,7 @@ const pool = require('../db');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 // Liste des clients
-router.get('/', authenticateToken, authorizeRoles('admin', 'gerant'), async (req, res) => {
+router.get('/', authenticateToken, authorizeRoles('admin', 'gerant', 'caissier'), async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM clients');
     res.json({ clients: rows, count: rows.length });
